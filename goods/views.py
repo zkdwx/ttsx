@@ -36,3 +36,35 @@ def index(request):
 
     return render(request, 'index.html',
                   {'categories': categories, 'cart_goods_list': cart_goods_list, 'cart_goods_count': cart_goods_count})
+
+
+def detail(request):
+    '''商品详情页'''
+    # 商品的分类
+    categories = GoodsCategory.objects.all()
+    # 购物车数据
+    # 所有的购物车商品
+    cart_goods_list = []
+    # 购物车商品的总数量
+    cart_goods_count = 0
+    # 去cookies取数据，goods_id:count
+    for goods_id, goods_num in request.COOKIES.items():
+        # 验证是不是商品数据
+        if not goods_id.isdigit():
+            continue
+        # 根据id查询商品
+        cart_goods = GoodsInfo.objects.get(id=goods_id)
+        # 把商品数量存放到商品对象里
+        cart_goods.goods_num = goods_num
+        # 把商品添加到列表里
+        cart_goods_list.append(cart_goods)
+        # 累加所有的商品数量 得到总数量
+        cart_goods_count = cart_goods_count + int(goods_num)
+    # 当前要显示的商品的数据
+    # 获取传过来的商品id
+    goods_id = request.GET.get('id', 1)
+    # 当前要显示商品的数据
+    goods_data = GoodsInfo.objects.get(id=goods_id)
+    return render(request, 'detail.html',
+                  {'categories': categories, 'cart_goods_list': cart_goods_list, 'cart_goods_count': cart_goods_count,
+                   'goods_data': goods_data})
