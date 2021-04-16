@@ -16,10 +16,13 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
-from goods.views import index, detail
+from cart.views import add_cart
+from goods.views import index, detail, goods
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^index/$', index),
     url(r'^detail/$', detail),
+    url(r'^cart/add_cart/$', add_cart),
+    url(r'^goods/$', goods),
 ]

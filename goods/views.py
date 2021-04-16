@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render
 
@@ -68,3 +69,38 @@ def detail(request):
     return render(request, 'detail.html',
                   {'categories': categories, 'cart_goods_list': cart_goods_list, 'cart_goods_count': cart_goods_count,
                    'goods_data': goods_data})
+
+
+def goods(request):
+    '''商品分类页面'''
+    # 获取传过来的id
+    cag_id = request.GET.get("cag", 1)
+    # 获取当前的页码
+    page_id = request.GET.get("page", 1)
+    # 获取当前的分类对象
+    current_cag = GoodsCategory.objects.get(id=cag_id)
+    # 当前分类下的所有商品
+    goods_data = GoodsInfo.objects.filter(goods_cag_id=cag_id)
+    # 实例化分页器对象paginator 参数1是需要分页的数据 参数2是每一页显示的数量
+    paginator = Paginator(goods_data, 12)
+    page_data = paginator.page(page_id)
+    # 所有分类
+    categories = GoodsCategory.objects.all()
+    # 购物车所有商品
+    cart_goods_list = []
+    # 购物车总数量
+    cart_goods_count = 0
+    for goods_id, goods_num in request.COOKIES.items():
+        if not goods_id.isdigit():
+            continue
+        cart_goods = GoodsInfo.objects.get(id=goods_id)
+        cart_goods.goods_num = goods_num
+        cart_goods_list.append(cart_goods)
+        cart_goods_count = cart_goods_count + int(goods_num)
+    return render(request, 'goods.html', {'current_cag': current_cag,
+                                          'page_data': page_data,
+                                          'categories': categories,
+                                          'cart_goods_list': cart_goods_list,
+                                          'cart_goods_count': cart_goods_count,
+                                          'paginator': paginator,
+                                          'cag_id': cag_id})
