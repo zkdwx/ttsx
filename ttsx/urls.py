@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
-from cart.views import add_cart
+from cart.views import add_cart, show_cart
 from goods.views import index, detail, goods
 
 urlpatterns = [
@@ -25,4 +25,5 @@ urlpatterns = [
     url(r'^detail/$', detail),
     url(r'^cart/add_cart/$', add_cart),
     url(r'^goods/$', goods),
+    url(r'^cart/show_cart/$', show_cart),
 ]
